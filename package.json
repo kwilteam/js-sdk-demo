@@ -1,0 +1,23 @@
+{
+  "name": "js-sdk-demo",
+  "version": "1.0.0",
+  "description": "A demo for using the Kwil JavaScript SDK",
+  "main": "./src/nodeKwil.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwilteam/js-sdk-demo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kwilteam/js-sdk-demo/issues"
+  },
+  "homepage": "https://github.com/kwilteam/js-sdk-demo#readme",
+  "dependencies": {
+    "ethers": "^5.7.2",
+    "kwil": "^0.0.4"
+  }
+}
