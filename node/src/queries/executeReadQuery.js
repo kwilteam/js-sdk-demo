@@ -1,4 +1,4 @@
-const kwilNodeFile = require('../../node/src/nodeKwil.js');
+const kwilNodeFile = require('../nodeKwil');
 
 const kwil = kwilNodeFile.kwil;
 const wallet = kwilNodeFile.wallet;
@@ -22,7 +22,7 @@ async function readTableData(address, datababase, tableName) {
         }
     }`)
 
-    console.log(res)
+    console.log(res.data)
 }
 
 readTableData(wallet.address, "demo_db", 'users');

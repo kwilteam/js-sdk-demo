@@ -1,45 +1,53 @@
-import kwiljs from "kwil";
+import { WebKwil, Types, DBBuilder } from "kwil";
 import { ethers } from "ethers";
 
-// Get eth address
-async function getAddress() {
+// Get eth provider
+async function getSigner() {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider._ready();
   await ethereum.request({ method: "eth_requestAccounts" });
   const signer = provider.getSigner();
+  return signer;
+}
+
+async function getAddress() {
+  const signer = await getSigner();
   const address = await signer.getAddress();
   return address;
 }
 
 //Create WebKwil Client
-const kwil = new kwiljs.WebKwil({
-    kwilProvider: import.meta.env.KWIL_PROVIDER,
-    graphqlProvider: import.meta.env.GRAPHQL_PROVIDER,
+const kwil = new WebKwil({
+    kwilProvider: import.meta.env.VITE_KWIL_PROVIDER,
+    graphqlProvider: import.meta.env.VITE_GRAPHQL_PROVIDER,
     timeout: 10000,
-    apiKey: import.meta.env.API_KEY,
+    apiKey: import.meta.env.VITE_API_KEY,
     logging: false
 })
 
 async function deployDatabase() {
+  // Get Signer 
+  const signer = await getSigner();
+
   // Get Wallet Address
   const walletAddress = await getAddress();
 
   // Initialize DB Builder
-  let db = new kwiljs.DBBuilder("browser_demo_db", walletAddress);
+  let db = new DBBuilder("browser_demo_db", walletAddress);
 
   // Create New Table
   let usersTable = db.newTable("users", walletAddress)
 
       // Create columns
-      let idColumn = usersTable.newColumn("id", kwiljs.Types.DataType.INT64);
-      let userNameColumn = usersTable.newColumn("name", kwiljs.Types.DataType.STRING);
-      let walletColumn = usersTable.newColumn("wallet", kwiljs.Types.DataType.STRING);
+      let idColumn = usersTable.newColumn("id", Types.DataType.INT64);
+      let userNameColumn = usersTable.newColumn("name", Types.DataType.STRING);
+      let walletColumn = usersTable.newColumn("wallet", Types.DataType.STRING);
 
       // Add attributes to columns
-      idColumn.addAttribute(kwiljs.Types.AttributeType.PRIMARY_KEY);
-      userNameColumn.addAttribute(kwiljs.Types.AttributeType.NOT_NULL);
-      userNameColumn.addAttribute(kwiljs.Types.AttributeType.MIN_LENGTH, 7);
-      walletColumn.addAttribute(kwiljs.Types.AttributeType.NOT_NULL);
+      idColumn.addAttribute(Types.AttributeType.PRIMARY_KEY);
+      userNameColumn.addAttribute(Types.AttributeType.NOT_NULL);
+      userNameColumn.addAttribute(Types.AttributeType.MIN_LENGTH, 7);
+      walletColumn.addAttribute(Types.AttributeType.NOT_NULL);
 
       // Add columns to table
       usersTable.addColumn(idColumn);
@@ -50,7 +58,7 @@ async function deployDatabase() {
       db.addTable(usersTable);
 
     // Create Insert Query
-    let insertQuery = db.newQuery("insert_user", usersTable.name, kwiljs.Types.QueryType.INSERT);
+    let insertQuery = db.newQuery("insert_user", usersTable.name, Types.QueryType.INSERT);
 
       // Add parameters to query
       let idParameter = insertQuery.newParameter("id", idColumn.name);
@@ -59,7 +67,7 @@ async function deployDatabase() {
 
       // Add Caller Modifier to wallet parameter
       walletParameter.setStatic("");
-      walletParameter.setModifier(kwiljs.Types.ModifierType.CALLER);
+      walletParameter.setModifier(Types.ModifierType.CALLER);
 
       // Add parameters to insert query
       insertQuery.addParameter(idParameter);
@@ -70,18 +78,18 @@ async function deployDatabase() {
       db.addQuery(insertQuery);
 
     // Create Update Query
-    let updateQuery = db.newQuery("update_user", usersTable.name, kwiljs.Types.QueryType.UPDATE);
+    let updateQuery = db.newQuery("update_user", usersTable.name, Types.QueryType.UPDATE);
 
       // Add parameters to update query
       let updateIdParameter = updateQuery.newParameter("id", idColumn.name);
       let updateNameParameter = updateQuery.newParameter("name", userNameColumn.name);
 
       // Add Where Clause to update query
-      let walletWhereClause = updateQuery.newWhere("wallet", walletColumn.name, kwiljs.Types.OperatorType.EQUAL);
+      let walletWhereClause = updateQuery.newWhere("wallet", walletColumn.name, Types.OperatorType.EQUAL);
 
       // Add Caller Modifier to wallet where clause
       walletWhereClause.setStatic("");
-      walletWhereClause.setModifier(kwiljs.Types.ModifierType.CALLER);
+      walletWhereClause.setModifier(Types.ModifierType.CALLER);
 
       // Add parameters and where clause to update query
       updateQuery.addParameter(updateIdParameter);
@@ -92,14 +100,14 @@ async function deployDatabase() {
       db.addQuery(updateQuery);
 
     // Create Delete Query
-    let deleteQuery = db.newQuery("delete_user", usersTable.name, kwiljs.Types.QueryType.DELETE);
+    let deleteQuery = db.newQuery("delete_user", usersTable.name, Types.QueryType.DELETE);
 
       // Add Where clause to delete query
-      let deleteWhereWallet = deleteQuery.newWhere("delete_wallet_where", walletColumn.name, kwiljs.Types.OperatorType.EQUAL);
+      let deleteWhereWallet = deleteQuery.newWhere("delete_wallet_where", walletColumn.name, Types.OperatorType.EQUAL);
 
       // Add Caller Modifier to delete where clause
       deleteWhereWallet.setStatic("");
-      deleteWhereWallet.setModifier(kwiljs.Types.ModifierType.CALLER);
+      deleteWhereWallet.setModifier(Types.ModifierType.CALLER);
 
       // Add where clause to delete query
       deleteQuery.addWhere(deleteWhereWallet);
@@ -127,7 +135,7 @@ async function deployDatabase() {
       db.addRole(userRole);
 
     // Create new index
-    let idIndex = db.newIndex("id_index", usersTable.name, kwiljs.Types.IndexType.BTREE);
+    let idIndex = db.newIndex("id_index", usersTable.name, Types.IndexType.BTREE);
 
       // Add columns for index to apply to
       idIndex.addColumn(idColumn.name);
@@ -135,24 +143,25 @@ async function deployDatabase() {
       // Add index to database
       db.addIndex(idIndex);
     
-    // Validate Database
-    async function validateDb(database) {
-      const validate = await kwil.validateSchema(database.export());
-      return validate.data.valid;
-    }
+  // Validate Database
+  async function validateDB() {
+    const validate = await kwil.validateSchema(db.export());
+    return validate.data.valid;
+}
 
-    // Deploy Database
-    async function deployDb(database) {
-      let tx = database.newTx();
-      tx = await kwil.deployDatabase(tx, walletAddress);
+  // Deploy Database
+  async function deployDb(database) {
+    let tx = database.newTx();
+    tx = await kwil.prepareTx(tx, signer);
 
-      const res = await kwil.broadcast(tx);
-      console.log(res);
-    }
+    const res = await kwil.broadcast(tx);
+    console.log(res);
+  }
 
-    if(await validateDb(db)) {
-      await deployDb(db);
-    }
+  
+  if (await validateDB(db)) {
+    await deployDb(db);
+  }
 
 }
 

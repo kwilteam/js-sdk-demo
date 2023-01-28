@@ -6,8 +6,8 @@ async function ExecuteInsert(ownerAddress, dbName) {
     const dbi = await kwil.selectDatabase(ownerAddress, dbName);
     const executable = dbi.getExecutable("insert_user");
 
-    executable.setInput("id", "1");
-    executable.setInput("name", "kwilLuke");
+    executable.setInput('id', 1);
+    executable.setInput('name', "kwilLuke");
 
     //Check if Executable is complete
     if(!executable.isComplete()) {
