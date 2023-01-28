@@ -10,7 +10,7 @@ npm i kwil
 ## Node.js
 Sample node.js files can be found under the "./node" folder. The node folder contains examples for how to deploy a database, execute queries against the database, and read from the database using GraphQL.
 
-To initiate using the SDK in Node.js, being by using the "NodeKwil" class.
+To initiate using the SDK in Node.js, begin by using the "NodeKwil" class.
 
 ## Browser
 Sample browser files can be found under the "./browser" folder. The "./browser/main.js" contains an example for how to deploy a Kwil database in the browser.
