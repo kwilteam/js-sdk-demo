@@ -2,7 +2,7 @@
   "name": "js-sdk-demo",
   "version": "1.0.0",
   "description": "A demo for using the Kwil JavaScript SDK",
-  "main": "./src/nodeKwil.js",
+  "main": "./src",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,7 +17,11 @@
   },
   "homepage": "https://github.com/kwilteam/js-sdk-demo#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
-    "kwil": "^0.0.4"
+    "kwil": "^0.0.5"
+  },
+  "devDependencies": {
+    "@web/dev-server": "^0.1.35"
   }
 }
