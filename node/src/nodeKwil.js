@@ -1,4 +1,4 @@
-const kwiljs = require('kwil');
+const { NodeKwil, DBBuilder, Types } = require('kwil');
 const ethers = require('ethers');
 require('dotenv').config();
 
@@ -6,7 +6,7 @@ require('dotenv').config();
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY);
 
 // Create Kwil Node Client
-const kwil = new kwiljs.NodeKwil({
+const kwil = new NodeKwil({
     kwilProvider: process.env.KWIL_PROVIDER,
     graphqlProvider: process.env.GRAPHQL_PROVIDER,
     timeout: 10000,
@@ -16,21 +16,21 @@ const kwil = new kwiljs.NodeKwil({
 
 // Initialize DB Builder
 
-let db = new kwiljs.DBBuilder("demo_db", wallet.address);
+let db = new DBBuilder("demo_db", wallet.address);
 
 // Create New Table
-let usersTable = db.newTable("users", wallet)
+let usersTable = db.newTable("users")
 
     // Create columns
-    let idColumn = usersTable.newColumn("id", kwiljs.Types.DataType.INT64);
-    let userNameColumn = usersTable.newColumn("name", kwiljs.Types.DataType.STRING);
-    let walletColumn = usersTable.newColumn("wallet", kwiljs.Types.DataType.STRING);
+    let idColumn = usersTable.newColumn("id", Types.DataType.INT64);
+    let userNameColumn = usersTable.newColumn("name", Types.DataType.STRING);
+    let walletColumn = usersTable.newColumn("wallet", Types.DataType.STRING);
 
     // Add attributes to columns
-    idColumn.addAttribute(kwiljs.Types.AttributeType.PRIMARY_KEY);
-    userNameColumn.addAttribute(kwiljs.Types.AttributeType.NOT_NULL);
-    userNameColumn.addAttribute(kwiljs.Types.AttributeType.MIN_LENGTH, 7);
-    walletColumn.addAttribute(kwiljs.Types.AttributeType.NOT_NULL);
+    idColumn.addAttribute(Types.AttributeType.PRIMARY_KEY);
+    userNameColumn.addAttribute(Types.AttributeType.NOT_NULL);
+    userNameColumn.addAttribute(Types.AttributeType.MIN_LENGTH, 7);
+    walletColumn.addAttribute(Types.AttributeType.NOT_NULL);
 
     // Add columns to table
     usersTable.addColumn(idColumn);
@@ -41,7 +41,7 @@ let usersTable = db.newTable("users", wallet)
     db.addTable(usersTable);
 
 // Create Insert Query
-let insertQuery = db.newQuery("insert_user", usersTable.name, kwiljs.Types.QueryType.INSERT);
+let insertQuery = db.newQuery("insert_user", usersTable.name, Types.QueryType.INSERT);
 
     // Add parameters to insert query
     let idParameter = insertQuery.newParameter("id", idColumn.name);
@@ -50,7 +50,7 @@ let insertQuery = db.newQuery("insert_user", usersTable.name, kwiljs.Types.Query
 
     // Add Caller Modifier to wallet parameter
     walletParameter.setStatic("")
-    walletParameter.setModifier(kwiljs.Types.ModifierType.CALLER);
+    walletParameter.setModifier(Types.ModifierType.CALLER);
 
     // Add parameters to Insert Query
     insertQuery.addParameter(idParameter);
@@ -62,18 +62,18 @@ let insertQuery = db.newQuery("insert_user", usersTable.name, kwiljs.Types.Query
     db.addQuery(insertQuery);
 
 // Create Update Query
-let updateQuery = db.newQuery("update_user", usersTable.name, kwiljs.Types.QueryType.UPDATE);
+let updateQuery = db.newQuery("update_user", usersTable.name, Types.QueryType.UPDATE);
 
     // Add parameters to update query
     let updateIdParameter = updateQuery.newParameter("id", idColumn.name);
     let updateNameParameter = updateQuery.newParameter("name", userNameColumn.name);
 
     // Add Where Clause to update query
-    let walletWhereClause = updateQuery.newWhere("wallet_where_clause", walletColumn.name, kwiljs.Types.OperatorType.EQUAL);
+    let walletWhereClause = updateQuery.newWhere("wallet_where_clause", walletColumn.name, Types.OperatorType.EQUAL);
 
     // Add Caller Modifier to wallet where clause
     walletWhereClause.setStatic("");
-    walletWhereClause.setModifier(kwiljs.Types.ModifierType.CALLER);
+    walletWhereClause.setModifier(Types.ModifierType.CALLER);
 
     // Add Parameters and Where Clause to Update Query
     updateQuery.addParameter(updateIdParameter);
@@ -84,14 +84,14 @@ let updateQuery = db.newQuery("update_user", usersTable.name, kwiljs.Types.Query
     db.addQuery(updateQuery);
 
 // Create Delete Query
-let deleteQuery = db.newQuery("delete_user", usersTable.name, kwiljs.Types.QueryType.DELETE);
+let deleteQuery = db.newQuery("delete_user", usersTable.name, Types.QueryType.DELETE);
 
     // Add Where Clause to delete query
-    let deleteWhereWallet = deleteQuery.newWhere("delete_wallet_where", walletColumn.name, kwiljs.Types.OperatorType.EQUAL);
+    let deleteWhereWallet = deleteQuery.newWhere("delete_wallet_where", walletColumn.name, Types.OperatorType.EQUAL);
 
     // Add Caller Modifier to delete Where Clause
     deleteWhereWallet.setStatic("");
-    deleteWhereWallet.setModifier(kwiljs.Types.ModifierType.CALLER);
+    deleteWhereWallet.setModifier(Types.ModifierType.CALLER);
 
     // Add Where Clause to Delete Query
     deleteQuery.addWhere(deleteWhereWallet);
@@ -119,7 +119,7 @@ let userRole = db.newRole("user");
     db.addRole(userRole);
 
 // Create New Index
-let idIndex = db.newIndex("id_index", usersTable.name, kwiljs.Types.IndexType.BTREE);
+let idIndex = db.newIndex("id_index", usersTable.name, Types.IndexType.BTREE);
 
     // Add columns for index to apply to
     idIndex.addColumn(idColumn.name);
