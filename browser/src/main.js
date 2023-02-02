@@ -159,9 +159,22 @@ async function deployDatabase() {
   }
 
   
-  if (await validateDB(db)) {
-    await deployDb(db);
+  // if (await validateDB(db)) {
+  //   await deployDb(db);
+  // }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  async function getFunder() {
+    return await kwil.getFunder("0xb0a194286A901FeAEA39D2b765247BEd64aD4F41", provider)
   }
+
+  async function getBalance() {
+    const funder = await getFunder();
+    const balance = await funder.getBalance(walletAddress);
+    console.log(balance)
+  }
+
+  getBalance()
 
 }
 

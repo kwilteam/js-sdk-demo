@@ -142,9 +142,9 @@ async function deployDB(database) {
     console.log(res)
 }
 
-if(validateDB(db)) {
-    deployDB(db);
-};
+// if(validateDB(db)) {
+//     deployDB(db);
+// };
 
 module.exports = {
     kwil,
