@@ -19,9 +19,7 @@ async function getAddress() {
 //Create WebKwil Client
 const kwil = new WebKwil({
     kwilProvider: import.meta.env.VITE_KWIL_PROVIDER,
-    graphqlProvider: import.meta.env.VITE_GRAPHQL_PROVIDER,
     timeout: 10000,
-    apiKey: import.meta.env.VITE_API_KEY,
     logging: false
 })
 

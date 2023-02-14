@@ -4,7 +4,7 @@ const { kwil, wallet } = require("../nodeKwil");
 
 async function ExecuteInsert(ownerAddress, dbName) {
     const dbi = await kwil.selectDatabase(ownerAddress, dbName);
-    const executable = dbi.getExecutable("insert_user");
+    const executable = dbi.getQuery("insert_user");
 
     executable.setInput('id', 1);
     executable.setInput('name', "kwilLuke");

@@ -17,7 +17,7 @@ async function readTableData(address, datababase, tableName) {
     const res = await kwil.graphql(`query getAllData {
         ${dbId}_${tableName} {
             id
-            name
+            user_name
             wallet
         }
     }`)

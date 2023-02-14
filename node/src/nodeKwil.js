@@ -8,9 +8,7 @@ const wallet = new ethers.Wallet(process.env.PRIVATE_KEY);
 // Create Kwil Node Client
 const kwil = new NodeKwil({
     kwilProvider: process.env.KWIL_PROVIDER,
-    graphqlProvider: process.env.GRAPHQL_PROVIDER,
     timeout: 10000,
-    apiKey: process.env.API_KEY,
     logging: false
 })
 
@@ -23,7 +21,7 @@ let usersTable = db.newTable("users")
 
     // Create columns
     let idColumn = usersTable.newColumn("id", Types.DataType.INT64);
-    let userNameColumn = usersTable.newColumn("name", Types.DataType.STRING);
+    let userNameColumn = usersTable.newColumn("user_name", Types.DataType.STRING);
     let walletColumn = usersTable.newColumn("wallet", Types.DataType.STRING);
 
     // Add attributes to columns
@@ -66,7 +64,7 @@ let updateQuery = db.newQuery("update_user", usersTable.name, Types.QueryType.UP
 
     // Add parameters to update query
     let updateIdParameter = updateQuery.newParameter("id", idColumn.name);
-    let updateNameParameter = updateQuery.newParameter("name", userNameColumn.name);
+    let updateNameParameter = updateQuery.newParameter("user_name", userNameColumn.name);
 
     // Add Where Clause to update query
     let walletWhereClause = updateQuery.newWhere("wallet_where_clause", walletColumn.name, Types.OperatorType.EQUAL);
@@ -100,8 +98,8 @@ let deleteQuery = db.newQuery("delete_user", usersTable.name, Types.QueryType.DE
     db.addQuery(deleteQuery);
 
 // Create New Roles
-let adminRole = db.newRole("admin");
-let userRole = db.newRole("user");
+let adminRole = db.newRole("admin_role");
+let userRole = db.newRole("user_role");
 
     // Make userRole default
     userRole.setDefault(true);
