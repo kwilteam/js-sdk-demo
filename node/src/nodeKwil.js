@@ -12,6 +12,9 @@ const kwil = new NodeKwil({
     logging: false
 })
 
+
+
+
 // Initialize DB Builder
 
 let db = new DBBuilder("demo_db", wallet.address);

@@ -2,13 +2,12 @@ const { kwil } = require('../nodeKwil');
 const { ethers } = require('ethers');
 
 class Payment {
-    constructor(pool, ethProvider) {
-        this.pool = pool;
+    constructor(ethProvider) {
         this.ethProvider = ethProvider;
     }
 
     async getFunder() {
-        return await kwil.getFunder(this.pool, this.ethProvider);
+        return await kwil.getFunder(this.ethProvider);
     }
 
     async getBalance(address) {
@@ -45,9 +44,8 @@ class Payment {
 async function testFunding() {
     const provider = new ethers.providers.JsonRpcProvider(process.env.ETH_PROVIDER);
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-    const kwilFundingPool = "0xb0a194286A901FeAEA39D2b765247BEd64aD4F41";
 
-    const funding = new Payment(kwilFundingPool, wallet);
+    const funding = new Payment(wallet);
 
     const res = await funding.approve(100);
 
