@@ -23,7 +23,7 @@ let db = new DBBuilder("demo_db", wallet.address);
 let usersTable = db.newTable("users")
 
     // Create columns
-    let idColumn = usersTable.newColumn("id", Types.DataType.INT64);
+    let idColumn = usersTable.newColumn("id", Types.DataType.UUID);
     let userNameColumn = usersTable.newColumn("user_name", Types.DataType.STRING);
     let walletColumn = usersTable.newColumn("wallet", Types.DataType.STRING);
 
@@ -67,10 +67,10 @@ let updateQuery = db.newQuery("update_user", usersTable.name, Types.QueryType.UP
 
     // Add parameters to update query
     let updateIdParameter = updateQuery.newParameter("id", idColumn.name);
-    let updateNameParameter = updateQuery.newParameter("user_name", userNameColumn.name);
+    let updateNameParameter = updateQuery.newParameter("name", userNameColumn.name);
 
     // Add Where Clause to update query
-    let walletWhereClause = updateQuery.newWhere("wallet_where_clause", walletColumn.name, Types.OperatorType.EQUAL);
+    let walletWhereClause = updateQuery.newWhere("where_wallet", walletColumn.name, Types.OperatorType.EQUAL);
 
     // Add Caller Modifier to wallet where clause
     walletWhereClause.setStatic("");

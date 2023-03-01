@@ -7,6 +7,7 @@ async function getSigner() {
   await provider._ready();
   await ethereum.request({ method: "eth_requestAccounts" });
   const signer = provider.getSigner();
+  console.log(signer)
   return signer;
 }
 
@@ -37,8 +38,8 @@ async function deployDatabase() {
   let usersTable = db.newTable("users", walletAddress)
 
       // Create columns
-      let idColumn = usersTable.newColumn("id", Types.DataType.INT64);
-      let userNameColumn = usersTable.newColumn("name", Types.DataType.STRING);
+      let idColumn = usersTable.newColumn("id", Types.DataType.UUID);
+      let userNameColumn = usersTable.newColumn("user_name", Types.DataType.STRING);
       let walletColumn = usersTable.newColumn("wallet", Types.DataType.STRING);
 
       // Add attributes to columns
@@ -60,7 +61,7 @@ async function deployDatabase() {
 
       // Add parameters to query
       let idParameter = insertQuery.newParameter("id", idColumn.name);
-      let nameParameter = insertQuery.newParameter("name", userNameColumn.name);
+      let nameParameter = insertQuery.newParameter("user_name", userNameColumn.name);
       let walletParameter = insertQuery.newParameter("wallet", walletColumn.name);
 
       // Add Caller Modifier to wallet parameter
@@ -80,7 +81,7 @@ async function deployDatabase() {
 
       // Add parameters to update query
       let updateIdParameter = updateQuery.newParameter("id", idColumn.name);
-      let updateNameParameter = updateQuery.newParameter("name", userNameColumn.name);
+      let updateNameParameter = updateQuery.newParameter("user_name", userNameColumn.name);
 
       // Add Where Clause to update query
       let walletWhereClause = updateQuery.newWhere("wallet", walletColumn.name, Types.OperatorType.EQUAL);
@@ -114,8 +115,8 @@ async function deployDatabase() {
       db.addQuery(deleteQuery);
 
     // Create New Roles
-    let adminRole = db.newRole("admin");
-    let userRole = db.newRole("user");
+    let adminRole = db.newRole("admin_role");
+    let userRole = db.newRole("user_role");
 
       // Make userRole default
       userRole.setDefault(true);
@@ -133,10 +134,10 @@ async function deployDatabase() {
       db.addRole(userRole);
 
     // Create new index
-    let idIndex = db.newIndex("id_index", usersTable.name, Types.IndexType.BTREE);
+    let idIndex = db.newIndex("wallet_index", usersTable.name, Types.IndexType.BTREE);
 
       // Add columns for index to apply to
-      idIndex.addColumn(idColumn.name);
+      idIndex.addColumn(walletColumn.name);
 
       // Add index to database
       db.addIndex(idIndex);
@@ -144,8 +145,9 @@ async function deployDatabase() {
   // Validate Database
   async function validateDB() {
     const validate = await kwil.validateSchema(db.export());
+    console.log(validate)
     return validate.data.valid;
-}
+  }
 
   // Deploy Database
   async function deployDb(database) {
@@ -155,21 +157,26 @@ async function deployDatabase() {
     const res = await kwil.broadcast(tx);
     console.log(res);
   }
-
   
-  // if (await validateDB(db)) {
-  //   await deployDb(db);
-  // }
-
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  async function getFunder() {
-    return await kwil.getFunder("0xb0a194286A901FeAEA39D2b765247BEd64aD4F41", provider)
+  if (await validateDB(db)) {
+    await deployDb(db);
   }
 
+  // check the balance of the wallet we used to deploy
+
+  const fundingProvider = new ethers.providers.Web3Provider(window.ethereum);
+
+  // Get Kwil Funder Object
+  
+  async function getFunder() {
+    return await kwil.getFunder(fundingProvider)
+  }
+
+  //Check Balance
   async function getBalance() {
     const funder = await getFunder();
     const balance = await funder.getBalance(walletAddress);
-    console.log(balance)
+    console.log(ethers.BigNumber.from(balance).toString())
   }
 
   getBalance()

@@ -19,7 +19,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
-    "kwil": "^0.0.8"
+    "kwil": "^0.0.11"
   },
   "devDependencies": {
     "@web/dev-server": "^0.1.35"
