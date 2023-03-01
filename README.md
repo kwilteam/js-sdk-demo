@@ -23,4 +23,4 @@ cd browser
 npm run dev
 ```
 
-### If you have any questions, please email info@kwil.com or pop into our [Discord](https://discord.com/invite/HzRPZ59Kay).
+### If you have any questions, please email help@kwil.com or pop into our [Discord](https://discord.com/invite/HzRPZ59Kay).
