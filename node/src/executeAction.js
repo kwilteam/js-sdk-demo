@@ -1,6 +1,6 @@
 const { kwil, wallet } = require('./nodeKwil');
 const { getDBID } = require('./getSchema');
-const { Utils } = require('luke-dev');
+const { Utils } = require('kwil');
 
 // This file demonstrates how to execute an action on a Kwil database.
 

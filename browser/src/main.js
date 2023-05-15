@@ -1,4 +1,4 @@
-import { WebKwil } from "luke-dev";
+import { WebKwil } from "kwil";
 import { BrowserProvider } from "ethers";
 import testDb from "./testDb2.kf.json";
 

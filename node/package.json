@@ -19,7 +19,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "ethers": "^6.3.0",
-    "luke-dev": "^2.0.13"
+    "kwil": "^3.0.0"
   },
   "devDependencies": {
     "@web/dev-server": "^0.1.35"
