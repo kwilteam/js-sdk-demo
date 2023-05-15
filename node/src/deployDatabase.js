@@ -4,17 +4,18 @@ const { kwil, wallet } = require('./nodeKwil')
 const testDb = require('./testDb.kf.json')
 
 async function deployDatabase(json) {
-    // Step 2. Create a new database object
-    const db = kwil.newDatabase(json)
+    // Step 2. Create a new database transaction
+    const dbTx = await kwil
+        .dbBuilder()
+        .payload(testDb)
+        .signer(wallet)
+        .buildTx();
 
-    // Step 3. Create a new transaction with .prepareJson() and sign it with your wallet
-    const tx = await db.prepareJson(wallet);
-
-    // Step 4. Broadcast the transaction
-    const res = await kwil.broadcast(tx);
+    // Step 3. Broadcast the transaction
+    const res = await kwil.broadcast(dbTx);
 
     // console log the result
-    console.log(res)
+    console.log(res);
 }
 
-// deployDatabase(testDb)
+deployDatabase(testDb)
