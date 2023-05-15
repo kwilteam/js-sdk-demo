@@ -1,4 +1,4 @@
-const { kwil } = require('./nodeKwil')
+const { kwil, wallet } = require('./nodeKwil')
 
 // This file contains functions to help you view Kwil database metadata
 

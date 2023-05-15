@@ -1,4 +1,4 @@
-const { NodeKwil } = require('luke-dev');
+const { NodeKwil } = require('kwil');
 const { Wallet } = require('ethers')
 require('dotenv').config();
 

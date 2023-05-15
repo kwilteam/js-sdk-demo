@@ -1,14 +1,14 @@
 const { kwil } = require('./nodeKwil');
-const { ethers } = require('ethers');
+const { ethers, JsonRpcProvider } = require('ethers');
 
 class Payment {
-    constructor(ethProvider) {
-        this.ethProvider = ethProvider;
+    constructor(signer) {
+        this.signer = signer;
     }
 
     //Step 1. Retrieve the Funder Object
     async getFunder() {
-        return await kwil.getFunder(this.ethProvider);
+        return await kwil.getFunder(this.signer);
     }
 
     //Step 2. Get the balance of a wallet address
@@ -20,7 +20,7 @@ class Payment {
     //Step 3. Approve funds to be deposited to funding pool
     async approve(amount) {
         const funder = await this.getFunder();
-        return await funder.approve(ethers.BigNumber.from(`${amount}`));
+        return await funder.approve(BigInt(amount) * BigInt(10 ** 18));
     }
 
     //Step 4. Get the allowance of a wallet address
@@ -32,7 +32,7 @@ class Payment {
     //Step 5. Deposit funds to the funding pool
     async deposit(amount) {
         const funder = await this.getFunder();
-        return await funder.deposit(ethers.BigNumber.from(`${amount}`));
+        return await funder.deposit(BigInt(amount) * BigInt(10 ** 18));
     }
 
     //Step 6. Check deposited balance of a wallet address
@@ -49,12 +49,12 @@ class Payment {
 }
 
 async function testFunding() {
-    const provider = new ethers.providers.JsonRpcProvider(process.env.ETH_PROVIDER);
+    const provider = new JsonRpcProvider(process.env.ETH_PROVIDER);
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
     const funding = new Payment(wallet);
 
-    const res = await funding.getBalance(wallet.address);
+    const res = await funding.getTokenAddress();
 
     console.log(res);
 }
